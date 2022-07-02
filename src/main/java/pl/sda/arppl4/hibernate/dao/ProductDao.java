@@ -1,34 +1,93 @@
 package pl.sda.arppl4.hibernate.dao;
 
+import jakarta.persistence.TypedQuery;
+import org.hibernate.Session;
+import org.hibernate.SessionException;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import pl.sda.arppl4.hibernate.model.Product;
+import pl.sda.arppl4.hibernate.util.HibernateUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ProduktDao implements IProduktDao{
+public class ProductDao implements IProductDao {
 
     @Override
     public void dodajProduct(Product product) {
-        
+        SessionFactory fabrykaPolaczen = HibernateUtil.getSessionFactory();
+
+        Transaction transaction = null;
+        try (Session session = fabrykaPolaczen.openSession()) {
+            transaction = session.beginTransaction();
+
+            session.merge(product);
+
+            transaction.commit();
+        } catch (SessionException sessionException) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
     }
 
     @Override
     public void usunProduct(Product product) {
+        SessionFactory fabrykaPolaczen = HibernateUtil.getSessionFactory();
+        try (Session session = fabrykaPolaczen.openSession()) {
+            Transaction transaction = session.beginTransaction();
 
+            session.remove(product);
+
+            transaction.commit();
+        }
     }
 
     @Override
     public Optional<Product> zwrocProduct(Long id) {
-        return Optional.empty();
+        SessionFactory fabrykaPolaczen = HibernateUtil.getSessionFactory();
+        Product obiektProduct;
+        try (Session session = fabrykaPolaczen.openSession()) {
+            obiektProduct = session.get(Product.class, id);
+
+            return Optional.ofNullable(obiektProduct);
+        }
     }
 
     @Override
     public List<Product> zwrocListeProduct() {
-        return null;
+        List<Product> productList = new ArrayList<>();
+
+        SessionFactory fabrykaPolaczen = HibernateUtil.getSessionFactory();
+        try (Session session = fabrykaPolaczen.openSession()) {
+            // Tworzymy "zapytanie" do bazy o obiekty typu Student
+            TypedQuery<Product> zapytanie = session.createQuery("from Product ", Product.class);
+            List<Product> wynikZapytania = zapytanie.getResultList();
+
+            productList.addAll(wynikZapytania);
+        } catch (SessionException sessionException) {
+            System.err.println("Błąd wczytywania danych.");
+        }
+        return productList;
     }
 
     @Override
-    public void updateStudent(Product Product) {
+    public void updateStudent(Product product) {
+        SessionFactory fabrykaPolaczen = HibernateUtil.getSessionFactory();
 
+        Transaction transaction = null;
+        try (Session session = fabrykaPolaczen.openSession()) {
+            transaction = session.beginTransaction();
+
+            session.merge(product);
+
+            transaction.commit();
+        } catch (SessionException sessionException) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
     }
 }
+

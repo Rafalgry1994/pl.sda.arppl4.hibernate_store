@@ -5,7 +5,7 @@ import pl.sda.arppl4.hibernate.model.Product;
 import java.util.List;
 import java.util.Optional;
 
-public interface IProduktDao {
+public interface IProductDao {
 
 
     public void dodajProduct(Product product);

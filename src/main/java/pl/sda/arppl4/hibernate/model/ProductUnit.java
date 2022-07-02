@@ -1,2 +1,7 @@
-package pl.sda.arppl4.hibernate.model;public class ProductUnit {
+package pl.sda.arppl4.hibernate.model;
+
+public enum ProductUnit {
+    UNIT,
+    GRAM,
+    MILLILITER;
 }
